@@ -1,2 +1,8 @@
 .DS_Store
 venv/
+venv/
+__pycache__/
+*.pyc
+chroma_db/
+helix_srop.db
+.env
