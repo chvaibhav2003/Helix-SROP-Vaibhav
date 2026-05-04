@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+pydantic
+pydantic-settings
+
+sentence-transformers
+chromadb
+
+ollama
+
+python-dotenv
+structloggit
