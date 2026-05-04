@@ -252,11 +252,8 @@ It is designed to be **easily extendable into a full production-grade agent syst
 
 ---
 
-## 🎥 Demo Video
 
-👉 *(Add your Loom link here)*
 
----
 
 ## 🙌 Thank You
 
