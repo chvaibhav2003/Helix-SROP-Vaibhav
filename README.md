@@ -219,13 +219,13 @@ Chosen over FAISS because:
 
 | Phase                    | Time       |
 | ------------------------ | ---------- |
-| Setup + DB + FastAPI     | 2–3 hrs    |
-| RAG ingest + retrieval   | 4–5 hrs    |
-| Agent architecture       | 3–4 hrs    |
-| Pipeline + tracing       | 3–4 hrs    |
-| LLM integration (Ollama) | 2 hrs      |
-| Debugging + testing      | 3–4 hrs    |
-| **Total**                | ~18–22 hrs |
+| Setup + DB + FastAPI     | 2 hrs    |
+| RAG ingest + retrieval   | 1 hrs    |
+| Agent architecture       | 1-2 hrs    |
+| Pipeline + tracing       | 1 hrs    |
+| LLM integration (Ollama) | 1 hrs      |
+| Debugging + testing      | 2-4 hrs    |
+| **Total**                | ~approx. 10 hrs |
 
 ---
 
