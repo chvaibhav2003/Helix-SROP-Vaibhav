@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./helix_srop.db"
     chroma_persist_dir: str = "./chroma_db"
 
-    google_api_key: str = ""
+    google_api_key: str = "AIzaSyAa0hyfLtVUE1mqi2fA_DtFqub4K-1q8I8"
     adk_model: str = "gemini-2.0-flash"
 
     llm_timeout_seconds: int = 30

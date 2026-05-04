@@ -1,71 +1,166 @@
-# Helix SROP — [Your Name]
+🚀 Helix SROP — AI Support System
+Author: Vaibhav Chaudhary
 
-## Setup
+📌 Overview
+Helix SROP is an AI-powered support orchestration platform that routes user queries to specialized agents using an LLM-based decision system, retrieves knowledge using RAG (Retrieval-Augmented Generation), and provides transparent execution traces for observability.
 
-```bash
-git clone <your-repo>
-cd helix-srop
-uv sync
-cp .env.example .env  # fill in GOOGLE_API_KEY
-uv run python -m app.rag.ingest --path docs/
-uv run uvicorn app.main:app --reload
-```
+The system is designed with a modular, agent-based architecture inspired by Google ADK, enabling scalable and extensible AI workflows.
 
-## Quick Test
+⚙️ Setup Instructions
+git clone https://github.com/chvaibhav2003/Helix-SROP-Vaibhav.git
+cd helix-srop-assignment
 
-```bash
-SESSION=$(curl -s -X POST localhost:8000/v1/sessions \
-  -H "Content-Type: application/json" \
-  -d '{"user_id": "u_demo", "plan_tier": "pro"}' | jq -r .session_id)
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate
 
-curl -s -X POST localhost:8000/v1/chat/$SESSION \
-  -H "Content-Type: application/json" \
-  -d '{"content": "How do I rotate a deploy key?"}' | jq .
-```
+# Install dependencies
+pip install -r requirements.txt
 
-## Architecture
+# Run RAG ingestion
+python -m app.rag.ingest --path docs/
 
-```
-[ASCII diagram here]
-```
+# Start server
+uvicorn app.main:app --reload
+🧪 Quick Test
+1️⃣ Create Session
+curl -X POST http://localhost:8000/v1/sessions \
+-H "Content-Type: application/json" \
+-d '{"user_id": "u_demo", "plan_tier": "pro"}'
+2️⃣ Chat
+curl -X POST http://localhost:8000/v1/chat/<SESSION_ID> \
+-H "Content-Type: application/json" \
+-d '{"content": "How do I rotate a deploy key?"}'
+3️⃣ Trace
+curl http://localhost:8000/v1/traces/<TRACE_ID>
+🏗️ Architecture
+User Request
+     ↓
+FastAPI API Layer
+     ↓
+Pipeline (State + Orchestration)
+     ↓
+LLM Router (Intent Classification)
+     ↓
+ ┌───────────────┬────────────────┐
+ │ KnowledgeAgent │ AccountAgent   │
+ └───────┬────────┴───────┬────────┘
+         ↓                ↓
+   RAG (Vector DB)   Account Tools
+         ↓                ↓
+      Response        Response
+         ↓
+   Trace Logging (DB)
+🧠 Key Components
+🔹 1. LLM-Based Routing
+Uses local LLM (Ollama - phi3) to classify intent:
 
-## Design Decisions
+knowledge → documentation queries
+account → user-specific queries
+Includes fallback logic for reliability
 
-### State persistence (which pattern and why)
-I used [Pattern 1/2/3 from the ADK guide] because...
+🔹 2. Knowledge Agent (RAG)
+Uses:
 
-### Chunking strategy
-I used [heading-aware / sentence-aware / fixed-size] chunking because...
+Chunking (heading-aware + overlap)
+Sentence Transformers embeddings
+ChromaDB vector store
+Retrieves top-k relevant chunks
 
-### Vector store choice
-I chose [Chroma / LanceDB / FAISS] because...
+Uses LLM to generate contextual answers
 
-## Known Limitations
+🔹 3. Account Agent
+Handles:
 
-- ...
+Build queries
+Account usage/status
+Uses tool abstraction (get_recent_builds, get_account_status)
 
-## What I'd Do With More Time
+Currently implemented with mock data (as allowed)
 
-- ...
+🔹 4. Pipeline (Core Engine)
+Handles:
 
-## Time Spent
+Session state loading
+LLM routing
+Agent execution
+Trace recording
+DB persistence
+🔹 5. Trace System (Observability)
+Each request generates a trace_id with:
 
-| Phase | Time |
-|-------|------|
-| Setup + DB + FastAPI boilerplate | |
-| RAG ingest + search_docs | |
-| ADK agents | |
-| pipeline.py + state persistence | |
-| Tests | |
-| README | |
-| **Total** | |
+Routed agent
+Tool calls
+Retrieved document chunks
+Latency
+👉 Enables debugging, monitoring, and transparency
 
-## Extensions Completed
+🗄️ Database Design
+Users
+Sessions (with serialized state)
+Messages
+Agent Traces
+Uses SQLite (async SQLAlchemy) for simplicity.
 
-- [ ] E1: Idempotency
-- [ ] E2: Escalation agent
-- [ ] E3: Streaming SSE
-- [ ] E4: Reranking
-- [ ] E5: Guardrails
-- [ ] E6: Docker
-- [ ] E7: Eval harness
+🧩 Design Decisions
+✅ State Persistence
+Used DB-backed session state instead of in-memory:
+
+Survives restarts
+Enables multi-turn context
+Production-ready pattern
+✅ Chunking Strategy
+Used heading-aware + overlap chunking:
+
+Preserves semantic structure
+Improves retrieval accuracy
+Avoids context loss at boundaries
+✅ Vector Store (ChromaDB)
+Chosen over FAISS because:
+
+Persistent storage
+Built-in metadata filtering
+Easier integration for production-like systems
+✅ LLM Choice (Ollama - Local)
+Avoids API limits and cost
+Enables offline inference and fast deployement
+Demonstrates practical deployment approach with ease access controlls also can quantized for later research purpose
+⚠️ Known Limitations
+Full Google ADK AgentTool integration not implemented
+Mock data used for account tools
+No advanced retry/caching strategies
+Limited evaluation/testing coverage
+🚀 What I’d Do With More Time
+Full Google ADK integration (AgentTool + event stream parsing)
+Add reranking layer for RAG
+Implement streaming responses (SSE)
+Add evaluation harness
+Improve tool reliability + retries
+Add Docker deployment
+⏱️ Time Spent
+Phase	Time
+Setup + DB + FastAPI	2-3 hrs
+RAG ingest + retrieval	1-2 hrs
+Agent architecture	2-3 hrs
+Pipeline + tracing	1 hrs
+LLM integration (Ollama)	1hrs
+Debugging + testing	2–3 hrs
+Total	~approx 10 hrs
+🏆 Extensions Implemented
+✅ RAG pipeline
+✅ LLM-based routing
+✅ Local LLM (Ollama)
+✅ Trace observability
+✅ Fault-tolerant fallback system
+💡 Final Notes
+This system follows an ADK-inspired architecture:
+
+Root orchestrator agent
+Specialized sub-agents
+Tool abstraction layer
+LLM-driven decision-making
+It is designed to be easily extendable into a full production-grade agent system.
+
+🎥 Demo Video
+🙌 Thank You
+Looking forward to feedback!
